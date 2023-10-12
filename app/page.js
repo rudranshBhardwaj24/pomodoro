@@ -8,7 +8,19 @@ export default function Home() {
   const [unit, setUnit] = useState("Sec");
   const [minute, setMinute] = useState(0);
   const [running, setRunning] = useState(false);
-  const alarm = new Audio("/alarm.wav");
+  const [alarm, setAlarm] = useState(null);
+
+  // Create an Audio instance if it's supported
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Check if Audio is available in the browser environment
+      if ("Audio" in window) {
+        // Create an Audio instance if it's supported
+        const audio = new window.Audio("/alarm.wav");
+        setAlarm(audio);
+      }
+    }
+  }, []);
 
   const options = ["Seconds", "Minutes", "Hours"];
 
@@ -56,7 +68,7 @@ export default function Home() {
     return () => {
       clearInterval(timer);
     };
-  }, [currentTime, limit, running, limit]);
+  }, [currentTime, limit, running, limit, alarm, minute]);
 
   return (
     <>
@@ -101,8 +113,8 @@ export default function Home() {
               className="text-2xl mx-8 text-white font-bold border-2 border-white p-2 rounded-md w-40 bg-black"
               onChange={handleUnitChange}
             >
-              {options.map((unit) => {
-                return <option>{unit}</option>;
+              {options.map((unit, index) => {
+                return <option key={index}>{unit}</option>;
               })}
             </select>
           </div>
